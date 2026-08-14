@@ -31,3 +31,19 @@ HORIZ_REACH = 120  # max horizontal offset from one platform to the next (reacha
 
 # Camera
 SHIFT_THRESHOLD = 150   # px from top where the camera starts scrolling
+
+# Theme: Rising at Golden Hour
+SKY_TOP_DUSK = (42, 47, 90)        # deep indigo at the top (start)
+SKY_MID_DUSK = (90, 91, 160)       # dusk mid-band
+SKY_TOP_DAWN = (252, 170, 138)     # dawn top-tint (high altitude)
+SKY_MID_DAWN = (255, 210, 166)     # dawn mid-tint
+SKY_HORIZON = (246, 227, 201)      # warm cream horizon (bottom)
+PLATFORM_TOP = (255, 246, 228)     # cream ledge top
+PLATFORM_BODY = (216, 192, 142)    # ledge body
+PLATFORM_EDGE = (196, 168, 116)    # ledge underside
+PLAYER_COLOR = (242, 104, 90)      # coral character
+PLAYER_CORE = (255, 191, 164)      # lighter core glow
+PLAYER_OUTLINE = (148, 62, 66)     # character outline
+SCORE_TEXT = (255, 246, 228)       # warm cream text
+SHADOW = (30, 28, 55)              # soft drop-shadow
+STAR_COLOR = (255, 246, 228)       # drifting dust specks

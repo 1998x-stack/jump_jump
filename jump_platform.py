@@ -3,16 +3,28 @@
 import random
 
 import pygame
-from config import (PLATFORM_SIZE, PLATFORM_COLOR, PLATFORM_MIN_GAP,
-                    PLATFORM_MAX_GAP, SCREEN_WIDTH, SCREEN_HEIGHT, HORIZ_REACH)
+from config import (PLATFORM_SIZE, PLATFORM_MIN_GAP, PLATFORM_MAX_GAP,
+                    SCREEN_WIDTH, SCREEN_HEIGHT, HORIZ_REACH,
+                    PLATFORM_TOP, PLATFORM_BODY, PLATFORM_EDGE)
 
 
 class Platform:
     def __init__(self, x, y):
-        self.image = pygame.Surface(PLATFORM_SIZE)
-        self.image.fill(PLATFORM_COLOR)
+        self.image = self._render(PLATFORM_SIZE)
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
+
+    @staticmethod
+    def _render(size):
+        w, h = size
+        img = pygame.Surface((w, h), pygame.SRCALPHA)
+        radius = 7
+        # underside first, then the lighter body, then a cream top
+        pygame.draw.rect(img, PLATFORM_EDGE, (0, 0, w, h), border_radius=radius)
+        pygame.draw.rect(img, PLATFORM_BODY, (2, 1, w - 4, h - 2),
+                         border_radius=radius - 1)
+        pygame.draw.line(img, PLATFORM_TOP, (radius, 3), (w - radius, 3), 2)
+        return img
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
