@@ -11,6 +11,7 @@ BLACK = (0, 0, 0)
 
 # Physics
 GRAVITY = 0.5
+MAX_FALL_SPEED = 20  # cap fall speed at platform height so we never tunnel through
 
 # Player settings
 PLAYER_SIZE = (50, 50)
@@ -26,6 +27,7 @@ PLATFORM_SIZE = (100, 20)
 PLATFORM_COLOR = (255, 0, 0)
 PLATFORM_MIN_GAP = 60
 PLATFORM_MAX_GAP = 120
+HORIZ_REACH = 120  # max horizontal offset from one platform to the next (reachable)
 
 # Camera
 SHIFT_THRESHOLD = 150   # px from top where the camera starts scrolling

@@ -6,7 +6,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pygame
 
-from config import GRAVITY, PLAYER_SPEED, BOUNCE_VELOCITY, SCREEN_WIDTH
+from config import (GRAVITY, PLAYER_SPEED, BOUNCE_VELOCITY, SCREEN_WIDTH,
+                    MAX_FALL_SPEED)
 from player import Player
 
 
@@ -56,6 +57,13 @@ def test_bounce_on_landing():
     assert p.collide(plat) is True
     assert p.vel_y == BOUNCE_VELOCITY
     assert p.rect.bottom == plat.rect.top
+
+
+def test_fall_speed_is_capped_to_avoid_tunneling():
+    p = Player()
+    p.vel_y = MAX_FALL_SPEED * 2  # huge downward velocity
+    p.update()
+    assert p.vel_y <= MAX_FALL_SPEED
 
 
 def test_no_bounce_when_moving_up():

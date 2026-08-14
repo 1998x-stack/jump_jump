@@ -2,7 +2,7 @@
 
 import pygame
 from config import (PLAYER_SIZE, PLAYER_START_POS, GRAVITY, PLAYER_COLOR,
-                    PLAYER_SPEED, BOUNCE_VELOCITY, SCREEN_WIDTH)
+                    PLAYER_SPEED, BOUNCE_VELOCITY, SCREEN_WIDTH, MAX_FALL_SPEED)
 
 
 class Player:
@@ -16,6 +16,8 @@ class Player:
 
     def update(self):
         self.vel_y += GRAVITY
+        if self.vel_y > MAX_FALL_SPEED:
+            self.vel_y = MAX_FALL_SPEED
         self.rect.y += self.vel_y
 
     def move_horizontal(self):

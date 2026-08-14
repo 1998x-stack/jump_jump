@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import (PLATFORM_MIN_GAP, PLATFORM_MAX_GAP, SCREEN_WIDTH,
-                    SCREEN_HEIGHT, PLATFORM_SIZE)
+                    SCREEN_HEIGHT, PLATFORM_SIZE, HORIZ_REACH)
 from jump_platform import (generate_initial_platforms, refill_platforms,
                            remove_platforms_below)
 
@@ -31,6 +31,13 @@ def test_platforms_inside_horizontal_bounds():
     for p in generate_initial_platforms():
         assert p.rect.left >= 0
         assert p.rect.right <= SCREEN_WIDTH
+
+
+def test_consecutive_platforms_within_horizontal_reach():
+    platforms = generate_initial_platforms()
+    for a, b in zip(platforms, platforms[1:]):
+        # a below, b above; their centers must be within HORIZ_REACH
+        assert abs(a.rect.centerx - b.rect.centerx) <= HORIZ_REACH
 
 
 def test_refill_extends_to_top():

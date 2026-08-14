@@ -35,7 +35,8 @@ def test_platforms_scroll_down_together():
     player = Player()
     platforms = generate_initial_platforms()
     before = [p.rect.y for p in platforms]
-    player.rect.top = 0
+    player.rect.top = 100  # small scroll, so no platform is pruned (keeps N stable)
     scroll = gf.update_screen(screen, player, platforms)
+    assert scroll > 0
     after = [p.rect.y for p in platforms]
     assert all(a == b + scroll for a, b in zip(after, before))
