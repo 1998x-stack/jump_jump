@@ -83,3 +83,23 @@ def test_script_allows_omitted_action():
     lines = [json.loads(l) for l in proc.stdout.strip().splitlines()[:-1]]
     # last two frames keep the previous 'right' direction
     assert all(l["player"]["dir"] == 1 for l in lines[1:])
+
+
+def test_script_expect_passes_sets_exit_0():
+    recipe = json.dumps({"seed": 1, "actions": [{"action": "right", "frames": 6}],
+                         "expect": {"state": "playing", "frames_ge": 5}})
+    proc = _script([recipe])
+    assert proc.returncode == 0, proc.stderr
+    summary = json.loads(proc.stdout.strip().splitlines()[-1])
+    assert summary["passed"] is True
+    assert summary["results"] == {"state": True, "frames_ge": True}
+
+
+def test_script_expect_fail_exit_1():
+    recipe = json.dumps({"seed": 1, "actions": [{"action": "right", "frames": 2}],
+                         "expect": {"score_ge": 99999}})
+    proc = _script([recipe])
+    assert proc.returncode == 1
+    summary = json.loads(proc.stdout.strip().splitlines()[-1])
+    assert summary["passed"] is False
+    assert summary["results"]["score_ge"] is False

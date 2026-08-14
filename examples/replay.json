@@ -1,0 +1,10 @@
+{
+  "seed": 1,
+  "actions": [
+    { "action": "right", "frames": 15 },
+    { "action": "left", "frames": 15 }
+  ],
+  "expect": {
+    "frames_ge": 30
+  }
+}

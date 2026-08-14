@@ -94,6 +94,30 @@ def run_headless(seed=None):
             print(json.dumps(snapshot), flush=True)
 
 
+def _check_expectations(expect, summary):
+    """Evaluate a small dict of goal assertions against the final summary.
+
+    Supported keys: score_ge, score_le, state, not_state, frames_ge, frames_le.
+    Returns (results_dict, passed_bool)."""
+    results = {}
+    score = summary.get("score", 0)
+    frames = summary.get("frames", 0)
+    state = summary.get("final_state")
+    if "score_ge" in expect:
+        results["score_ge"] = score >= expect["score_ge"]
+    if "score_le" in expect:
+        results["score_le"] = score <= expect["score_le"]
+    if "state" in expect:
+        results["state"] = state == expect["state"]
+    if "not_state" in expect:
+        results["not_state"] = state != expect["not_state"]
+    if "frames_ge" in expect:
+        results["frames_ge"] = frames >= expect["frames_ge"]
+    if "frames_le" in expect:
+        results["frames_le"] = frames <= expect["frames_le"]
+    return results, (all(results.values()) if results else True)
+
+
 # --------------------------------------------------------------------------- #
 # Scripted batch runner: a small JSON plan of actions, replayed deterministically
 # --------------------------------------------------------------------------- #
@@ -116,14 +140,21 @@ def run_script(script_path, fallback_seed=None):
             frames_run += 1
             print(json.dumps(snapshot), flush=True)
 
-    print(json.dumps({
+    summary = {
         "done": True,
         "frames": frames_run,
         "final_state": game.state,
         "score": int(game.score),
         "progress": round(game.progress(), 3),
         "player": {"x": int(game.player.x), "y": int(game.player.y)},
-    }), flush=True)
+    }
+    expect = data.get("expect", {})
+    results, passed = _check_expectations(expect, summary)
+    if results:
+        summary["results"] = results
+        summary["passed"] = passed
+    print(json.dumps(summary), flush=True)
+    return 0 if passed else 1
 
 
 # --------------------------------------------------------------------------- #
@@ -139,7 +170,8 @@ def main(argv=None):
     args = parser.parse_args(argv)
 
     if args.script is not None:
-        run_script(args.script, args.seed)
+        code = run_script(args.script, args.seed)
+        sys.exit(code)
     elif args.headless:
         run_headless(args.seed)
     else:

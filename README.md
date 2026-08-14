@@ -98,6 +98,35 @@ JSON state line per frame, then a final summary line:
 Same recipe + seed always produces identical output, so scripts are
 deterministic and rerunnable.
 
+### Goal assertions
+
+Add an `expect` block to gate the run with a pass/fail exit code (useful for
+CI or scripting):
+
+```json
+{
+  "seed": 1,
+  "actions": [{ "action": "right", "frames": 15 }],
+  "expect": { "state": "playing", "frames_ge": 15 }
+}
+```
+
+Supported checks: `score_ge`, `score_le`, `state`, `not_state`, `frames_ge`,
+`frames_le`. The run exits `0` if all pass, `1` otherwise, and the final line
+includes `results` and `passed`:
+
+```json
+{"done": true, "frames": 15, "final_state": "playing", "score": 0,
+ "results": {"state": true, "frames_ge": true}, "passed": true}
+```
+
+## Examples
+
+- `examples/replay.json` — a ready-to-run scripted recipe:
+  `python main.py --script examples/replay.json`
+- `examples/drive_game.py` — driving the engine as a Python library
+  (no window, no pygame): `python examples/drive_game.py`
+
 ### Using the engine directly (no CLI)
 
 ```python
