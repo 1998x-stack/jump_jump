@@ -17,5 +17,10 @@ FORCE_FACTOR = 10  # Jump force multiplier
 PLAYER_SIZE = (50, 50)
 PLAYER_START_POS = (SCREEN_WIDTH // 2, SCREEN_HEIGHT - 150)
 
+# Player colors/motion
+PLAYER_COLOR = (0, 255, 0)
+PLAYER_SPEED = 6
+BOUNCE_VELOCITY = -14
+
 # Platform settings
 PLATFORM_SIZE = (100, 20)
