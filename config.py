@@ -11,7 +11,6 @@ BLACK = (0, 0, 0)
 
 # Physics
 GRAVITY = 0.5
-FORCE_FACTOR = 10  # Jump force multiplier
 
 # Player settings
 PLAYER_SIZE = (50, 50)
@@ -24,3 +23,9 @@ BOUNCE_VELOCITY = -14
 
 # Platform settings
 PLATFORM_SIZE = (100, 20)
+PLATFORM_COLOR = (255, 0, 0)
+PLATFORM_MIN_GAP = 60
+PLATFORM_MAX_GAP = 120
+
+# Camera
+SHIFT_THRESHOLD = 150   # px from top where the camera starts scrolling
