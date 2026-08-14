@@ -95,16 +95,52 @@ def run_headless(seed=None):
 
 
 # --------------------------------------------------------------------------- #
+# Scripted batch runner: a small JSON plan of actions, replayed deterministically
+# --------------------------------------------------------------------------- #
+def run_script(script_path, fallback_seed=None):
+    if script_path == "-":
+        data = json.loads(sys.stdin.read())
+    else:
+        with open(script_path, encoding="utf-8") as fh:
+            data = json.load(fh)
+
+    game = Game(seed=data.get("seed", fallback_seed))
+    frames_run = 0
+    for entry in data.get("actions", []):
+        action = entry.get("action")
+        frames = int(entry.get("frames", 1))
+        for _ in range(frames):
+            snapshot = game.step(action)
+            if snapshot is None:
+                break
+            frames_run += 1
+            print(json.dumps(snapshot), flush=True)
+
+    print(json.dumps({
+        "done": True,
+        "frames": frames_run,
+        "final_state": game.state,
+        "score": int(game.score),
+        "progress": round(game.progress(), 3),
+        "player": {"x": int(game.player.x), "y": int(game.player.y)},
+    }), flush=True)
+
+
+# --------------------------------------------------------------------------- #
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Jump Jump — endless jumper")
     parser.add_argument("--headless", action="store_true",
                         help="no window; read one action per stdin line, "
                              "print one JSON state line per frame")
+    parser.add_argument("--script", metavar="FILE", default=None,
+                        help="run a JSON action recipe; FILE may be '-' for stdin")
     parser.add_argument("--seed", type=int, default=None,
                         help="seed for a reproducible world")
     args = parser.parse_args(argv)
 
-    if args.headless:
+    if args.script is not None:
+        run_script(args.script, args.seed)
+    elif args.headless:
         run_headless(args.seed)
     else:
         run_windowed(args.seed)

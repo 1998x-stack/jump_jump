@@ -68,6 +68,36 @@ Output is one JSON object per frame:
  "platforms": 10}
 ```
 
+## Scripted batch mode
+
+Run a fixed, rerunnable `JSON` action recipe (a deterministic replay):
+
+```bash
+python main.py --script replay.json    # or: --script -  (JSON from stdin)
+```
+
+```json
+{
+  "seed": 123,
+  "actions": [
+    { "action": "right", "frames": 20 },
+    { "action": "space", "frames": 1 },
+    { "frames": 5 }          // action omitted → keep current direction
+  ]
+}
+```
+
+For each entry the runner repeats `action` for `frames` frames, printing one
+JSON state line per frame, then a final summary line:
+
+```json
+{"done": true, "frames": 8, "final_state": "playing", "score": 0,
+ "progress": 0.0, "player": {"x": 203, "y": 643}}
+```
+
+Same recipe + seed always produces identical output, so scripts are
+deterministic and rerunnable.
+
 ### Using the engine directly (no CLI)
 
 ```python
