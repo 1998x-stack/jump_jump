@@ -1,0 +1,22 @@
+name: Headless and desktop game tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      SDL_VIDEODRIVER: dummy
+      SDL_AUDIODRIVER: dummy
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install -r requirements.txt pytest
+      - name: Validate game physics, replay, CLI and Pygame renderer
+        run: python -m pytest -q
+      - name: Validate example deterministic replay
+        run: python main.py --script examples/replay.json

@@ -137,3 +137,21 @@ for _ in range(120):
     snap = game.step("right")    # steer right one frame
 print(snap["state"], snap["score"])
 ```
+## P1 deterministic isolation (2026-11-09)
+
+The headless `Game(seed=...)` now owns a **private random number generator** rather
+than calling `random.seed` globally. Multiple independently seeded games can be
+run interleaved without altering one another or affecting application-level random
+state. Reset replays the same initial platforms for a fixed seed. The optional
+`rng` argument on level generation keeps older external callers working.
+
+Verify on a headless runner (no screen needed) or with the full Pygame suite:
+
+```bash
+python -m pip install -r requirements.txt pytest
+SDL_VIDEODRIVER=dummy SDL_AUDIODRIVER=dummy python -m pytest -q
+python main.py --script examples/replay.json
+```
+
+CI verifies deterministic isolation and rendering through a virtual SDL display;
+this is **not** a physical desktop gameplay certificate.

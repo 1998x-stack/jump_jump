@@ -138,31 +138,33 @@ def _bounce(player, platforms):
 # --------------------------------------------------------------------------- #
 # World generation
 # --------------------------------------------------------------------------- #
-def _next_y(top):
-    return top - random.randint(PLATFORM_MIN_GAP, PLATFORM_MAX_GAP)
+def _next_y(top, rng=None):
+    rng = rng if rng is not None else random
+    return top - rng.randint(PLATFORM_MIN_GAP, PLATFORM_MAX_GAP)
 
 
-def _next_x(prev_centerx):
-    center = prev_centerx + random.randint(-HORIZ_REACH, HORIZ_REACH)
+def _next_x(prev_centerx, rng=None):
+    rng = rng if rng is not None else random
+    center = prev_centerx + rng.randint(-HORIZ_REACH, HORIZ_REACH)
     center = max(PLATFORM_WIDTH // 2,
                  min(SCREEN_WIDTH - PLATFORM_WIDTH // 2, center))
     return center - PLATFORM_WIDTH // 2
 
 
-def generate_initial_platforms():
+def generate_initial_platforms(rng=None):
     plats = [Platform(SCREEN_WIDTH // 2 - PLATFORM_WIDTH // 2,
                       START_PLATFORM_TOP)]
     while plats[-1].top > 0:
-        plats.append(Platform(_next_x(plats[-1].centerx), _next_y(plats[-1].top)))
+        plats.append(Platform(_next_x(plats[-1].centerx, rng), _next_y(plats[-1].top, rng)))
     return plats
 
 
-def refill_platforms(plats):
+def refill_platforms(plats, rng=None):
     if not plats:
         plats.append(Platform(SCREEN_WIDTH // 2 - PLATFORM_WIDTH // 2,
                               START_PLATFORM_TOP))
     while plats[-1].top > 0:
-        plats.append(Platform(_next_x(plats[-1].centerx), _next_y(plats[-1].top)))
+        plats.append(Platform(_next_x(plats[-1].centerx, rng), _next_y(plats[-1].top, rng)))
 
 
 def remove_platforms_below(plats, screen_height=SCREEN_HEIGHT):
@@ -182,10 +184,11 @@ class Game:
         self.reset()
 
     def reset(self):
-        if self.seed is not None:
-            random.seed(self.seed)
+        # Private RNG avoids resetting the host application's global random state.
+        # Recreating it on reset gives the exact same level for a seeded replay.
+        self._rng = random.Random(self.seed)
         self.player = Player()
-        self.platforms = generate_initial_platforms()
+        self.platforms = generate_initial_platforms(self._rng)
         self.score = 0
         self.state = "playing"
         self.frame = 0
@@ -229,7 +232,7 @@ class Game:
             for plat in self.platforms:
                 plat.y += scroll
 
-        refill_platforms(self.platforms)
+        refill_platforms(self.platforms, self._rng)
         remove_platforms_below(self.platforms)
 
         self.score += scroll
